@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ML Web App</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #2e97b7, #32b9be);
+            color: white;
+        }
+
+        h1 {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        #main-container {
+            display: flex;
+            width: 100%;
+            margin-top: 8px;
+        }
+
+        #left-container,
+        #right-container {
+            width: 50%;
+            padding: 20px;
+        }
+
+        #left-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #form-container {
+            margin-bottom: 20px;
+            text-align: center;
+            width: 100%;
+        }
+
+        #image-container {
+            text-align: center;
+            margin-top: 8px;
+        }
+
+        #right-container {
+            text-align: left;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+
+        form div {
+            width: 100%;
+            margin-bottom: 10px;
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+        }
+
+        form label,
+        form select,
+        form input {
+            width: calc(45% - 5px); /* 45% width with 5px spacing */
+            margin-bottom: 5px;
+        }
+
+        form .param-input {
+            width: calc(45% - 5px); /* 45% width with 5px spacing */
+            margin-bottom: 5px;
+        }
+
+        form .param-input:last-child {
+            margin-right: 0;
+        }
+
+        .submit {
+            justify-content: center;
+        }
+
+        .explanation-text,
+        .parameters-text {
+            margin-bottom: 8px;
+            border: 1px solid #ddd;
+            box-shadow: 2px 2px 5px #aaa;
+            padding: 5%;
+        }
+
+        .explanation-text {
+            font-size: 14px;
+            margin-bottom: 64px;
+            text-align: justify;
+        }
+
+        .parameters-text {
+            font-size: 16px;
+            font-weight: bold;
+            text-align: justify;
+        }
+
+        .download-button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #4CAF50; /* Cor de fundo */
+            color: white; /* Cor do texto */
+            text-decoration: none;
+            border-radius: 5px;
+            margin-top: 10px; /* Adiciona um espaço superior ao botão */
+            font-weight: bold; /* Opção: torna o texto em negrito */
+        }
+
+        .download-button:hover {
+            background-color: #45a049; /* Cor de fundo quando hover */
+        }
+    </style>
+</head>
+<body>
+    <h1>Aplicação de Aprendizado de Máquina</h1>
+    <div id="main-container">
+        <div id="left-container">
+            <div id="form-container">
+                <form method="POST" action="/train">
+                    {{ form.hidden_tag() }}
+                    {{ form.csrf_token }}
+
+                    <div>
+                        <label for="classifier">Escolha o Classificador:</label>
+                        <select name="classifier" id="classifier">
+                            <option value="knn">KNN</option>
+                            <option value="mlp">MLP</option>
+                            <option value="dt">Decision Tree</option>
+                            <option value="rf">Random Forest</option>
+                        </select>
+                    </div>
+
+                    <div class="param-container">
+                        <label class="param-label" for="param1">{{ form.param1.label }}</label>
+                        {{ form.param1 }}
+                    </div>
+
+                    <div class="param-container">
+                        <label class="param-label" for="param2">{{ form.param2.label }}</label>
+                        {{ form.param2 }}
+                    </div>
+
+                    <div class="param-container">
+                        <label class="param-label" for="param3">{{ form.param3.label }}</label>
+                        {{ form.param3 }}
+                    </div>
+
+                    <div class="submit">
+                        {{ form.submit }}
+                    </div>
+                </form>
+            </div>
+
+            <div id="image-container">
+                {% if result %}
+                    <h2>Resultados:</h2>
+                    <p>Acurácia: {{ result.accuracy }}</p>
+                    <p>Precisão: {{ result.precision }}</p>
+                    <p>Recall: {{ result.recall }}</p>
+                    <p>F1-Score: {{ result.f1 }}</p>
+                    <img src="data:image/png;base64,{{ result.image }}" alt="Matriz de Confusão">
+                    <a class="download-button" href="/download_confusion_matrix" download>Download Matriz de Confusão</a>
+                {% endif %}
+            </div>
+        </div>
+
+
+
+        <div id="right-container">
+            <div class="explanation-text">
+                <p>{{ knn_explanation }}</p>
+                <p>{{ mlp_explanation }}</p>
+                <p>{{ dt_explanation }}</p>
+                <p>{{ rf_explanation }}</p>
+            </div>
+
+            <div class="parameters-text">
+                <p>{{ knn_parameters }}</p>
+                <p>{{ mlp_parameters }}</p>
+                <p>{{ dt_parameters }}</p>
+                <p>{{ rf_parameters }}</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
